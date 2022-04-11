@@ -1,0 +1,14 @@
+version: '2.0'
+services: 
+  logo_rec:
+    image: 'ai-logo-gen:1.9.0'
+    restart: always
+    ports: 
+      - 8901:8900
+    volumes:
+      - /home/yubin.wang/log/:/services/log/
+      - /etc/localtime:/etc/localtime:ro
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=1
+      - WORKER_NUM=1
+      - PYTHONUNBUFFERED=0

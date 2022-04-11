@@ -1,0 +1,4 @@
+opencv-python==4.2.0.34
+Cython==0.29.14
+falcon==2.0.0
+gunicorn
