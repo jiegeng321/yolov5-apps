@@ -9,37 +9,37 @@ import time,os
 import ctypes
 from src.utils.log_record import LogRecord
 ImageFile.LOAD_TRUNCATED_IMAGES = True
-libpath = os.path.join(os.path.dirname(__file__), config.so_name)
-ctypes.CDLL(libpath)
+#libpath = os.path.join(os.path.dirname(__file__), config.so_name)
+#ctypes.CDLL(libpath)
 NEW_IMG = Image.new("RGB", (config.max_size, config.max_size), color=(114, 114, 114))
-def nms(dets, thresh):
-    x1 = dets[:, 0]
-    y1 = dets[:, 1]
-    x2 = dets[:, 2]
-    y2 = dets[:, 3]
-    scores = dets[:, 4]
-
-    areas = (x2-x1+1)*(y2-y1+1)
-    orders = scores.argsort()[::-1]
-
-    keep = []
-    while orders.size > 0:
-        i = orders[0]
-        keep.append(i)
-        xx1 = np.maximum(x1[i], x1[orders[1:]])
-        yy1 = np.maximum(y1[i], y1[orders[1:]])
-        xx2 = np.minimum(x2[i], x2[orders[1:]])
-        yy2 = np.minimum(y2[i], y2[orders[1:]])
-
-        w = np.maximum(0.0, xx2 - xx1 + 1)
-        h = np.maximum(0.0, yy2 - yy1 + 1)
-        inter = w*h
-        iou = inter / (areas[i] + areas[orders[1:]] - inter)
-
-        inds = np.where(iou <= thresh)[0]
-        orders = orders[inds + 1]
-
-    return keep
+# def nms(dets, thresh):
+#     x1 = dets[:, 0]
+#     y1 = dets[:, 1]
+#     x2 = dets[:, 2]
+#     y2 = dets[:, 3]
+#     scores = dets[:, 4]
+#
+#     areas = (x2-x1+1)*(y2-y1+1)
+#     orders = scores.argsort()[::-1]
+#
+#     keep = []
+#     while orders.size > 0:
+#         i = orders[0]
+#         keep.append(i)
+#         xx1 = np.maximum(x1[i], x1[orders[1:]])
+#         yy1 = np.maximum(y1[i], y1[orders[1:]])
+#         xx2 = np.minimum(x2[i], x2[orders[1:]])
+#         yy2 = np.minimum(y2[i], y2[orders[1:]])
+#
+#         w = np.maximum(0.0, xx2 - xx1 + 1)
+#         h = np.maximum(0.0, yy2 - yy1 + 1)
+#         inter = w*h
+#         iou = inter / (areas[i] + areas[orders[1:]] - inter)
+#
+#         inds = np.where(iou <= thresh)[0]
+#         orders = orders[inds + 1]
+#
+#     return keep
 
 
 def pad_image(im, max_size=config.max_size):
@@ -73,14 +73,14 @@ def pad_image(im, max_size=config.max_size):
         print(e.message)
         return None
 
-def project_coor_back(bboxes, original_shape, input_size=config.max_size):
-    ratio = min(input_size/original_shape[0], input_size/original_shape[1])
-    nw, nh = int(ratio*original_shape[0]), int(ratio*original_shape[1])
-    pw, ph = input_size - nw, input_size - nh
-    bboxes[:, [0, 2]] -= pw/2
-    bboxes[:, [1, 3]] -= ph/2
-    bboxes /= ratio
-    return bboxes
+# def project_coor_back(bboxes, original_shape, input_size=config.max_size):
+#     ratio = min(input_size/original_shape[0], input_size/original_shape[1])
+#     nw, nh = int(ratio*original_shape[0]), int(ratio*original_shape[1])
+#     pw, ph = input_size - nw, input_size - nh
+#     bboxes[:, [0, 2]] -= pw/2
+#     bboxes[:, [1, 3]] -= ph/2
+#     bboxes /= ratio
+#     return bboxes
 
 
 class LogoDetector(object):
@@ -139,32 +139,32 @@ class LogoDetector(object):
         output = self.outputs[0]['host']
         return output
 
-    def postprocess(self, output, original_shape):
-        num = int(output[0])
-        pred = np.reshape(output[1:], (-1, 6))[:num, :]
-        boxes = pred[:, :4]
-        scores = pred[:, 4]
-        class_ids = pred[:, 5]
-
-        si = scores > config.conf_thresh
-        boxes = boxes[si, :]
-        scores = scores[si]
-        class_ids = class_ids[si]
-        boxes[:, 0] = boxes[:, 0] - boxes[:, 2] / 2
-        boxes[:, 1] = boxes[:, 1] - boxes[:, 3] / 2
-        boxes[:, 2] = boxes[:, 0] + boxes[:, 2]
-        boxes[:, 3] = boxes[:, 1] + boxes[:, 3]
-
-        dets = np.hstack((boxes, scores[:, np.newaxis])).astype(np.float32, copy=False)
-        indices = nms(dets, config.nms_thresh)
-
-        boxes = boxes[indices]
-        scores = scores[indices]
-        class_ids = class_ids[indices]
-
-        boxes = project_coor_back(boxes,original_shape)
-
-        return boxes, scores, class_ids
+    # def postprocess(self, output, original_shape):
+    #     num = int(output[0])
+    #     pred = np.reshape(output[1:], (-1, 6))[:num, :]
+    #     boxes = pred[:, :4]
+    #     scores = pred[:, 4]
+    #     class_ids = pred[:, 5]
+    #
+    #     si = scores > config.conf_thresh
+    #     boxes = boxes[si, :]
+    #     scores = scores[si]
+    #     class_ids = class_ids[si]
+    #     boxes[:, 0] = boxes[:, 0] - boxes[:, 2] / 2
+    #     boxes[:, 1] = boxes[:, 1] - boxes[:, 3] / 2
+    #     boxes[:, 2] = boxes[:, 0] + boxes[:, 2]
+    #     boxes[:, 3] = boxes[:, 1] + boxes[:, 3]
+    #
+    #     dets = np.hstack((boxes, scores[:, np.newaxis])).astype(np.float32, copy=False)
+    #     indices = nms(dets, config.nms_thresh)
+    #
+    #     boxes = boxes[indices]
+    #     scores = scores[indices]
+    #     class_ids = class_ids[indices]
+    #
+    #     boxes = project_coor_back(boxes,original_shape)
+    #
+    #     return boxes, scores, class_ids
 
     def detect(self, image, log_recorder):
         preprocess_start = time.time()
@@ -193,36 +193,36 @@ class LogoDetector(object):
         inference_cost = 1000*(time.time() - inference_start)
         self.logger.info(
             "inference cost time: {:.2f}ms".format(inference_cost))
-        log_recorder.record_profile_info('inference_total', inference_cost)
-        postprocess_start = time.time()
-        boxes, scores, class_ids = self.postprocess(raw_pred,image.size)
-        postprocess_cost = 1000*(time.time() - postprocess_start)
-        log_recorder.record_profile_info('postprocess', postprocess_cost)
-        logo_list = []
-        for i in range(len(boxes)):
-            score = float(scores[i])
-            logo_name = config.logo_id_to_name[int(class_ids[i])].split("-")
-            if logo_name[0] in config.brand_filter:
-                if score < config.brand_filter[logo_name[0]]:
-                    continue
-            if "w" in logo_name and score < config.word_conf_thresh:
-                continue
-            elif score < config.pic_conf_thresh:
-                continue
-            logo_object = {}
-            logo_object['score'] = score
-            logo_object['logo_name'] = logo_name[0]
-            box_object = {}
-            box_prediction = boxes[i]
-            box_object['x1'] = int(box_prediction[0])
-            box_object['y1'] = int(box_prediction[1])
-            box_object['x2'] = int(box_prediction[2])
-            box_object['y2'] = int(box_prediction[3])
-            logo_object['box'] = box_object
-            logo_list.append(logo_object)
-        result = {}
-        result['res'] = logo_list
-        return result
+        # log_recorder.record_profile_info('inference_total', inference_cost)
+        # postprocess_start = time.time()
+        # boxes, scores, class_ids = self.postprocess(raw_pred,image.size)
+        # postprocess_cost = 1000*(time.time() - postprocess_start)
+        # log_recorder.record_profile_info('postprocess', postprocess_cost)
+        # logo_list = []
+        # for i in range(len(boxes)):
+        #     score = float(scores[i])
+        #     logo_name = config.logo_id_to_name[int(class_ids[i])].split("-")
+        #     if logo_name[0] in config.brand_filter:
+        #         if score < config.brand_filter[logo_name[0]]:
+        #             continue
+        #     if "w" in logo_name and score < config.word_conf_thresh:
+        #         continue
+        #     elif score < config.pic_conf_thresh:
+        #         continue
+        #     logo_object = {}
+        #     logo_object['score'] = score
+        #     logo_object['logo_name'] = logo_name[0]
+        #     box_object = {}
+        #     box_prediction = boxes[i]
+        #     box_object['x1'] = int(box_prediction[0])
+        #     box_object['y1'] = int(box_prediction[1])
+        #     box_object['x2'] = int(box_prediction[2])
+        #     box_object['y2'] = int(box_prediction[3])
+        #     logo_object['box'] = box_object
+        #     logo_list.append(logo_object)
+        # result = {}
+        # result['res'] = logo_list
+        return {}#result
 
     def warmup(self):
         warm_log_record = LogRecord()
@@ -235,16 +235,16 @@ class LogoDetector(object):
 
 
 
-# if __name__=="__main__":
-#     import sys
-#     sys.path.append('.')
-#     log_path = "./dist/log"
-#     from src.utils.log_util import init_logger
-#     from log_record import LogRecord
-#     logger = init_logger("common", log_path)
-#     terror_detector = TerrorDetector(logger)
-#     img_file = Image.open("./test/1920_1088_1_gun.jpg")
-#     logrecord = LogRecord()
-#     res = terror_detector.detect(img_file, logrecord)
-#     print(res)
+if __name__=="__main__":
+    import sys
+    sys.path.append('.')
+    log_path = "./dist/log"
+    from src.utils.log_util import init_logger
+    from src.utils.log_record import LogRecord
+    logger = init_logger("common", log_path)
+    terror_detector = LogoDetector(logger)
+    img_file = Image.open("./test/1920_1088_1_gun.jpg")
+    logrecord = LogRecord()
+    res = terror_detector.detect(img_file, logrecord)
+    print(res)
 
