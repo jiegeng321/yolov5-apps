@@ -1,8 +1,8 @@
 # encoding=utf-8
-import os
-gpu_type = os.getenv('GPU_TYPE') if os.getenv('GPU_TYPE') != None else "P40"
-model_name = "model/20220314_yolov5m_brand776_style1376_" + gpu_type + ".trt"
-so_name = "libxdcvplugins_" + gpu_type + ".so"
+#import os
+#gpu_type = os.getenv('GPU_TYPE') if os.getenv('GPU_TYPE') != None else "P40"
+model_name = "/home/tdops/xu.fx/models/yolo_encoder.trt"# + gpu_type + ".trt"
+#so_name = "libxdcvplugins_" + gpu_type + ".so"
 model_version = "v1.0"
 app_name = "logo_det"
 conf_thresh = 0.4
