@@ -189,6 +189,7 @@ class LogoDetector(object):
 
         inference_start = time.time()
         raw_pred = self.inference(input_im,log_recorder)
+        print(raw_pred)
         inference_cost = 1000*(time.time() - inference_start)
         self.logger.info(
             "inference cost time: {:.2f}ms".format(inference_cost))
