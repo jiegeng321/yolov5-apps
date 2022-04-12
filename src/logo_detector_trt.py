@@ -126,39 +126,6 @@ class LogoDetector(object):
         inference_cost = 1000*(time.time() - inference_start)
         self.logger.info(
             "inference cost time: {:.2f}ms".format(inference_cost))
-        # log_recorder.record_profile_info('inference_total', inference_cost)
-        # postprocess_start = time.time()
-        # boxes, scores, class_ids = self.postprocess(raw_pred,image.size)
-        # postprocess_cost = 1000*(time.time() - postprocess_start)
-        # log_recorder.record_profile_info('postprocess', postprocess_cost)
-        # logo_list = []
-        # for i in range(len(boxes)):
-        #     score = float(scores[i])
-        #     logo_name = config.logo_id_to_name[int(class_ids[i])].split("-")
-        #     if logo_name[0] in config.brand_filter:
-        #         if score < config.brand_filter[logo_name[0]]:
-        #             continue
-        #     if "w" in logo_name and score < config.word_conf_thresh:
-        #         continue
-        #     elif score < config.pic_conf_thresh:
-        #         continue
-        #     logo_object = {}
-        #     logo_object['score'] = score
-        #     logo_object['logo_name'] = logo_name[0]
-        #     box_object = {}
-        #     box_prediction = boxes[i]
-        #     box_object['x1'] = int(box_prediction[0])
-        #     box_object['y1'] = int(box_prediction[1])
-        #     box_object['x2'] = int(box_prediction[2])
-        #     box_object['y2'] = int(box_prediction[3])
-        #     logo_object['box'] = box_object
-        #     logo_list.append(logo_object)
-        result = {}
-        result['res'] = []
-        #print(raw_pred)
-        inference_cost = 1000*(time.time() - inference_start)
-        self.logger.info(
-            "inference cost time: {:.2f}ms".format(inference_cost))
         result = {}
         result['res'] = raw_pred
         return result
