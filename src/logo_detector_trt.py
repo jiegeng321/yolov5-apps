@@ -239,7 +239,7 @@ class LogoDetector(object):
 if __name__=="__main__":
     import sys
     sys.path.append('.')
-    log_path = "./tmp_log"
+    log_path = "./tmp_log.txt"
     from src.utils.log_util import init_logger
     from src.utils.log_record import LogRecord
     logger = init_logger("common", log_path)
