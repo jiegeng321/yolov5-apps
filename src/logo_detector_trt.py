@@ -4,8 +4,9 @@ from PIL import Image, ImageFile
 import tensorrt as trt
 import pycuda.autoinit
 import pycuda.driver as cuda
+import time,os,sys
+sys.path.append('..')
 import model.config as config
-import time,os
 import ctypes
 from src.utils.log_record import LogRecord
 ImageFile.LOAD_TRUNCATED_IMAGES = True
@@ -189,7 +190,7 @@ class LogoDetector(object):
 
         inference_start = time.time()
         raw_pred = self.inference(input_im,log_recorder)
-        print(raw_pred)
+        print(type(raw_pred))
         inference_cost = 1000*(time.time() - inference_start)
         self.logger.info(
             "inference cost time: {:.2f}ms".format(inference_cost))
@@ -220,9 +221,9 @@ class LogoDetector(object):
         #     box_object['y2'] = int(box_prediction[3])
         #     logo_object['box'] = box_object
         #     logo_list.append(logo_object)
-        # result = {}
-        # result['res'] = logo_list
-        return {}#result
+        result = {}
+        result['res'] = []
+        return result
 
     def warmup(self):
         warm_log_record = LogRecord()
@@ -238,12 +239,12 @@ class LogoDetector(object):
 if __name__=="__main__":
     import sys
     sys.path.append('.')
-    log_path = "./dist/log"
+    log_path = "./tmp_log.txt"
     from src.utils.log_util import init_logger
     from src.utils.log_record import LogRecord
     logger = init_logger("common", log_path)
     terror_detector = LogoDetector(logger)
-    img_file = Image.open("./test/1920_1088_1_gun.jpg")
+    img_file = Image.open("/home/tdops/xu.fx/777bs_1377ks_test_img/checked_ZumbaFitness_ZumbaFitness472.jpg")
     logrecord = LogRecord()
     res = terror_detector.detect(img_file, logrecord)
     print(res)
