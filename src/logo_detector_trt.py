@@ -221,9 +221,9 @@ class LogoDetector(object):
         #     box_object['y2'] = int(box_prediction[3])
         #     logo_object['box'] = box_object
         #     logo_list.append(logo_object)
-        # result = {}
-        # result['res'] = logo_list
-        return {}#result
+        result = {}
+        result['res'] = []
+        return result
 
     def warmup(self):
         warm_log_record = LogRecord()
