@@ -10,38 +10,7 @@ import model.config as config
 import ctypes
 from src.utils.log_record import LogRecord
 ImageFile.LOAD_TRUNCATED_IMAGES = True
-#libpath = os.path.join(os.path.dirname(__file__), config.so_name)
-#ctypes.CDLL(libpath)
 NEW_IMG = Image.new("RGB", (config.max_size, config.max_size), color=(114, 114, 114))
-# def nms(dets, thresh):
-#     x1 = dets[:, 0]
-#     y1 = dets[:, 1]
-#     x2 = dets[:, 2]
-#     y2 = dets[:, 3]
-#     scores = dets[:, 4]
-#
-#     areas = (x2-x1+1)*(y2-y1+1)
-#     orders = scores.argsort()[::-1]
-#
-#     keep = []
-#     while orders.size > 0:
-#         i = orders[0]
-#         keep.append(i)
-#         xx1 = np.maximum(x1[i], x1[orders[1:]])
-#         yy1 = np.maximum(y1[i], y1[orders[1:]])
-#         xx2 = np.minimum(x2[i], x2[orders[1:]])
-#         yy2 = np.minimum(y2[i], y2[orders[1:]])
-#
-#         w = np.maximum(0.0, xx2 - xx1 + 1)
-#         h = np.maximum(0.0, yy2 - yy1 + 1)
-#         inter = w*h
-#         iou = inter / (areas[i] + areas[orders[1:]] - inter)
-#
-#         inds = np.where(iou <= thresh)[0]
-#         orders = orders[inds + 1]
-#
-#     return keep
-
 
 def pad_image(im, max_size=config.max_size):
     try:
@@ -73,15 +42,6 @@ def pad_image(im, max_size=config.max_size):
     except Exception as e:
         print(e.message)
         return None
-
-# def project_coor_back(bboxes, original_shape, input_size=config.max_size):
-#     ratio = min(input_size/original_shape[0], input_size/original_shape[1])
-#     nw, nh = int(ratio*original_shape[0]), int(ratio*original_shape[1])
-#     pw, ph = input_size - nw, input_size - nh
-#     bboxes[:, [0, 2]] -= pw/2
-#     bboxes[:, [1, 3]] -= ph/2
-#     bboxes /= ratio
-#     return bboxes
 
 
 class LogoDetector(object):
@@ -140,33 +100,6 @@ class LogoDetector(object):
         output = self.outputs[0]['host']
         return output
 
-    # def postprocess(self, output, original_shape):
-    #     num = int(output[0])
-    #     pred = np.reshape(output[1:], (-1, 6))[:num, :]
-    #     boxes = pred[:, :4]
-    #     scores = pred[:, 4]
-    #     class_ids = pred[:, 5]
-    #
-    #     si = scores > config.conf_thresh
-    #     boxes = boxes[si, :]
-    #     scores = scores[si]
-    #     class_ids = class_ids[si]
-    #     boxes[:, 0] = boxes[:, 0] - boxes[:, 2] / 2
-    #     boxes[:, 1] = boxes[:, 1] - boxes[:, 3] / 2
-    #     boxes[:, 2] = boxes[:, 0] + boxes[:, 2]
-    #     boxes[:, 3] = boxes[:, 1] + boxes[:, 3]
-    #
-    #     dets = np.hstack((boxes, scores[:, np.newaxis])).astype(np.float32, copy=False)
-    #     indices = nms(dets, config.nms_thresh)
-    #
-    #     boxes = boxes[indices]
-    #     scores = scores[indices]
-    #     class_ids = class_ids[indices]
-    #
-    #     boxes = project_coor_back(boxes,original_shape)
-    #
-    #     return boxes, scores, class_ids
-
     def detect(self, image, log_recorder):
         preprocess_start = time.time()
         pad_start = time.time()
@@ -190,7 +123,6 @@ class LogoDetector(object):
 
         inference_start = time.time()
         raw_pred = self.inference(input_im,log_recorder)
-        print(type(raw_pred))
         inference_cost = 1000*(time.time() - inference_start)
         self.logger.info(
             "inference cost time: {:.2f}ms".format(inference_cost))
@@ -223,6 +155,12 @@ class LogoDetector(object):
         #     logo_list.append(logo_object)
         result = {}
         result['res'] = []
+        #print(raw_pred)
+        inference_cost = 1000*(time.time() - inference_start)
+        self.logger.info(
+            "inference cost time: {:.2f}ms".format(inference_cost))
+        result = {}
+        result['res'] = raw_pred
         return result
 
     def warmup(self):
